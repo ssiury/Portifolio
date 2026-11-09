@@ -10,9 +10,9 @@ const PREVIEW_MS = 2600
 /** Raio (em pixels da tela, ao quadrado) da área que treme sob o cursor. */
 const SHAKE_RADIUS_SQ = 42 * 42
 /** Amplitude máxima do tremor coerente do quadro. */
-const SHAKE_PX = 5
+const SHAKE_PX = 2.5
 /** Amplitude da vibração individual de cada pixel. */
-const JITTER_PX = 6
+const JITTER_PX = 3
 
 interface SignalOptions {
   channels: readonly Channel[]
