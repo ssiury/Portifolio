@@ -7,6 +7,12 @@ const W = 200
 const H = 150
 /** Quanto tempo a prévia de um canal fica na tela antes de voltar ao nome. */
 const PREVIEW_MS = 2600
+/** Raio (em pixels da tela, ao quadrado) da área que treme sob o cursor. */
+const SHAKE_RADIUS_SQ = 42 * 42
+/** Amplitude máxima do tremor coerente do quadro. */
+const SHAKE_PX = 5
+/** Amplitude da vibração individual de cada pixel. */
+const JITTER_PX = 6
 
 interface SignalOptions {
   channels: readonly Channel[]
@@ -135,11 +141,12 @@ export class TvSignal {
     const roll = ((t / 30) % (H + 40)) - 20
     const d = this.image.data
     const g = this.gain
+    // tremor coerente do quadro: a região sob o cursor inteira chacoalha junto
+    const shakeX = (Math.random() - 0.5) * 2 * SHAKE_PX
+    const shakeY = (Math.random() - 0.5) * 2 * SHAKE_PX
 
     for (let y = 0; y < H; y++) {
-      let off = glitch ? Math.round(Math.sin(y * 0.4 + t * 0.03) * 7) : 0
-      const rowNear = inside ? Math.max(0, 1 - Math.abs(y - ly) / 26) : 0
-      if (rowNear > 0.05) off += Math.round((Math.random() - 0.5) * rowNear * 12)
+      const off = glitch ? Math.round(Math.sin(y * 0.4 + t * 0.03) * 7) : 0
       const band = Math.abs(y - roll) < 7 ? 14 : 0
       const row = y * W
 
@@ -150,17 +157,24 @@ export class TvSignal {
           const dx = x - lx
           const dy = y - ly
           const dd = dx * dx + dy * dy
-          if (dd < 1100) near = 1 - dd / 1100
+          if (dd < SHAKE_RADIUS_SQ) near = 1 - dd / SHAKE_RADIUS_SQ
         }
-        const sx = x + off + (near ? Math.round((Math.random() - 0.5) * near * 18) : 0)
-        const n = g + near * 0.6
+        let sx = x + off
+        let sy = y
+        if (near) {
+          // deslocamento do quadro + vibração individual de cada pixel
+          sx += Math.round(near * (shakeX + (Math.random() - 0.5) * JITTER_PX))
+          sy += Math.round(near * (shakeY + (Math.random() - 0.5) * JITTER_PX))
+        }
+        const srcRow = sy >= 0 && sy < H ? sy * W : -1
+        const n = g + near * 0.12
         if (Math.random() < n * 0.82) {
           const v = Math.random() * (120 + 135 * n)
           d[i] = d[i + 1] = d[i + 2] = v
         } else {
-          const R = sx - 1 >= 0 && sx - 1 < W ? mask[row + sx - 1] : 0
-          const G = sx >= 0 && sx < W ? mask[row + sx] : 0
-          const B = sx + 1 >= 0 && sx + 1 < W ? mask[row + sx + 1] : 0
+          const R = srcRow >= 0 && sx - 1 >= 0 && sx - 1 < W ? mask[srcRow + sx - 1] : 0
+          const G = srcRow >= 0 && sx >= 0 && sx < W ? mask[srcRow + sx] : 0
+          const B = srcRow >= 0 && sx + 1 >= 0 && sx + 1 < W ? mask[srcRow + sx + 1] : 0
           d[i] = (R ? 236 : 13) + band
           d[i + 1] = (G ? 244 : 17) + band
           d[i + 2] = (B ? 236 : 15) + band
