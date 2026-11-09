@@ -8,7 +8,7 @@ const H = 150
 /** Quanto tempo a prévia de um canal fica na tela antes de voltar ao nome. */
 const PREVIEW_MS = 2600
 /** Raio (em pixels da tela, ao quadrado) da área que treme sob o cursor. */
-const SHAKE_RADIUS_SQ = 42 * 42
+const SHAKE_RADIUS_SQ = 26 * 26
 /** Amplitude máxima do tremor coerente do quadro. */
 const SHAKE_PX = 2.5
 /** Amplitude da vibração individual de cada pixel. */
