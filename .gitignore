@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-ssr
+*.local
+.netlify
+.DS_Store
+*.tsbuildinfo
+.vscode/*
+!.vscode/extensions.json
+.idea
+npm-debug.log*

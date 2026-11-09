@@ -1,0 +1,58 @@
+@keyframes rec {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes noise {
+  0% {
+    background-position: 0 0;
+  }
+  33% {
+    background-position: -40px 20px;
+  }
+  66% {
+    background-position: 30px -50px;
+  }
+  100% {
+    background-position: -10px 40px;
+  }
+}
+
+@keyframes jolt {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-3px) skewX(-2deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes poweron {
+  from {
+    transform: scaleY(0.02);
+    filter: brightness(4);
+  }
+  60% {
+    transform: scaleY(1.02);
+  }
+  to {
+    transform: none;
+    filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
